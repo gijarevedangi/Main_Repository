@@ -6,6 +6,7 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 const server = http.createServer(app);
 const io = require("socket.io")(server);
+const twilio=require('twilio');
 
 app.use(express.static("public"));
 
@@ -13,6 +14,17 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/public/index.html");
 });
 
+app.get('/api/get-turn-credentials',(req,res)=>{
+  const accountSid='ACb91b389f01130a696eae333d1e47c646';
+  const authToken='39b4c85ea6c0249e16c36e86cdf684ba';
+  const client=twilio(accountSid,authToken); 
+
+  client.tokens.create().then((token)=>res.send({token})).catch(err =>{
+    console.log(err);
+    res.send({message:'Failed to fetch credentionals',err});
+  });
+
+});
 let connectedPeers = [];
 let connectedPeersStrangers = [];
 
